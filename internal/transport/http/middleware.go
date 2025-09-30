@@ -1,19 +1,35 @@
 package http
 
 import (
-	"sync/atomic"
+	"sync"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-var totalRequests int64
+var (
+	totalRequests int64
+	muMetrics     sync.Mutex
+)
+
+func incRequests() {
+	muMetrics.Lock()
+	totalRequests++
+	muMetrics.Unlock()
+}
+
+func readRequests() int64 {
+	muMetrics.Lock()
+	v := totalRequests
+	muMetrics.Unlock()
+	return v
+}
 
 func MetricsMiddleware(c *fiber.Ctx) error {
-	atomic.AddInt64(&totalRequests, 1)
+	incRequests()
 	return c.Next()
 }
 
 func MetricsHandler(c *fiber.Ctx) error {
-	v := atomic.LoadInt64(&totalRequests)
-	return c.JSON(fiber.Map{"requests_total": v})
+	v := readRequests()
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"requests_total": v})
 }

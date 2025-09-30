@@ -11,20 +11,15 @@ import (
 )
 
 func BuildServer() *fiber.App {
-	// repo (in-memory)
 	r := memory.NewActRepo()
-	// usecase
 	uc := usecase.NewActUsecase(r)
-	// handlers
 	h := thttp.NewActHandler(uc)
 
-	// fiber app + middlewares
 	app := fiber.New()
 	app.Use(recover.New())
 	app.Use(logger.New())
 	app.Use(thttp.MetricsMiddleware)
 
-	// routes
 	thttp.RegisterRoutes(app, h)
 
 	return app

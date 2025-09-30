@@ -16,7 +16,6 @@ func NewActRepo() *ActRepo {
 	return &ActRepo{}
 }
 
-// Create: присвоение ID и сохранение
 func (r *ActRepo) Create(a domain.Act) (domain.Act, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -27,7 +26,6 @@ func (r *ActRepo) Create(a domain.Act) (domain.Act, error) {
 	return a, nil
 }
 
-// ByID: поиск по ID
 func (r *ActRepo) ByID(id int) (domain.Act, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -40,7 +38,6 @@ func (r *ActRepo) ByID(id int) (domain.Act, error) {
 	return domain.Act{}, domain.ErrNotFound
 }
 
-// List: фильтрация по type и q (title contains, case-insensitive)
 func (r *ActRepo) List(filterType, q string) ([]domain.Act, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -58,7 +55,6 @@ func (r *ActRepo) List(filterType, q string) ([]domain.Act, error) {
 	return out, nil
 }
 
-// Delete: удаление по ID
 func (r *ActRepo) Delete(id int) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
